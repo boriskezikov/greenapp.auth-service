@@ -14,3 +14,17 @@ CREATE TABLE PLAIN_USERS
     isOnline boolean,
     password TEXT NOT NULL
 );
+
+CREATE TABLE TEST (
+    name TEXT PRIMARY KEY NOT NULL,
+    age text
+);
+
+insert into TEST(name, age) values ('boris', '20');
+insert into TEST(name, age) values ('boris1', '20');
+insert into TEST(name, age) values ('boris2', '20');
+insert into TEST(name, age) values ('boris3', '20');
+insert into TEST(name, age) values ('boris4', '20');
+insert into TEST(name, age) values ('boris5', '20');
+insert into TEST(name, age) values ('boris6', '20');
+insert into TEST(name, age) values ('boris7', '20');
