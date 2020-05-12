@@ -31,7 +31,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
-import static com.greenapp.authservice.KafkaConfigConstants.*;
+import static com.greenapp.authservice.kafka.KafkaConfigConstants.*;
 
 @Configuration
 @EnableKafka
