@@ -30,7 +30,7 @@ public class PlainUser {
     private boolean isEnabled;
     private String lastName;
     private String mailAddress;
-    private String phoneNumber;
+    private transient String phoneNumber;
     private Timestamp registeredDate;
     private String sessionToken;
     private boolean isOnline;
