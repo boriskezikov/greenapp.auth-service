@@ -12,6 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.greenapp.authservice.dto.TwoFaDTO;
 import com.netflix.config.DynamicPropertyFactory;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
@@ -48,25 +49,28 @@ public class KafkaConfiguration {
         String jaasCfg = String.format(jaasTemplate, USERNAME, PASSWORD);
         var props = new Properties();
 
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP);
-        props.put("group.id", USERNAME + "-consumer");
-        props.put("enable.auto.commit", propertyFactory
-                .getStringProperty("enable.auto.commit", "").get());
-        props.put("auto.commit.interval.ms", propertyFactory
-                .getStringProperty("auto.commit.interval.ms", "").get());
-        props.put("auto.offset.reset", propertyFactory
-                .getStringProperty("auto.offset.reset", "").get());
-        props.put("session.timeout.ms", propertyFactory
-                .getStringProperty("session.timeout.ms", "").get());
-        props.put("key.deserializer", StringDeserializer.class.getName());
-        props.put("value.deserializer", JsonDeserializer.class.getName());
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonObjectSerializer.class.getName());
-        props.put("security.protocol", propertyFactory
-                .getStringProperty("security.protocol", "").get());
-        props.put("sasl.mechanism", propertyFactory
-                .getStringProperty("sasl.mechanism", "").get());
+        props.put("enable.auto.commit", "true");
+        props.put("auto.commit.interval.ms", "1000");
+        props.put("auto.offset.reset", "earliest");
+        props.put("session.timeout.ms", "30000");
+        props.put("key.serializer", StringSerializer.class.getName());
+        props.put("value.serializer", StringSerializer.class.getName());
+        props.put("security.protocol", "SASL_SSL");
+        props.put("sasl.mechanism", "SCRAM-SHA-256");
         props.put("sasl.jaas.config", jaasCfg);
+
+        props.put(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                BOOTSTRAP);
+        props.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                USERNAME + "-consumer");
+        props.put(
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
+        props.put(
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
 
         return props;
     }
