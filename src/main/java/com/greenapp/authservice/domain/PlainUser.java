@@ -35,5 +35,4 @@ public class PlainUser {
     private String sessionToken;
     private boolean isOnline;
     private String password;
-
 }
