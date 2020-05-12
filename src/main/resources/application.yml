@@ -4,6 +4,15 @@ spring:
     username: scuikpoiqezkth
     password: d5ba06b1bebbfc49c52a7c0f69e40d3147bb42366145ce9cf09cdbc3bdd79f60
 
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+
 server:
   port: 8081
 
