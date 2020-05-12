@@ -27,19 +27,24 @@ public class PlainUserController {
         this.signUpService = signUpService;
     }
 
+    @GetMapping("clear")
+    public void clearAllTest() {
+        signUpService.clear();
+    }
+
+    @GetMapping("resend2fa")
+    public ResponseEntity<Boolean> resend2fa(@RequestParam String mail) {
+        return ResponseEntity.ok(signUpService.resend2Fa(mail));
+    }
+
     @PostMapping("up/")
     public ResponseEntity<AuthAccessToken> signUp(@RequestBody PlainUserSignUpDto userSignUpDto) {
         return ResponseEntity.ok(signUpService.signUp(userSignUpDto));
     }
 
     @GetMapping("verify2fa/{id}")
-    public boolean verify2fa(@PathVariable("id") BigInteger userId, @RequestParam String userCode) {
+    public boolean verify2fa(@PathVariable("id") Long userId, @RequestParam String userCode) {
         return signUpService.compare2Fa(userId, userCode);
-    }
-
-    @GetMapping("clear")
-    public void clearAllTest(){
-        signUpService.clear();
     }
 
 }
