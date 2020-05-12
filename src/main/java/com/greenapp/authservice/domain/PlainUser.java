@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "PLAIN_USERS")
+@Entity
 public class PlainUser {
 
     @Id
