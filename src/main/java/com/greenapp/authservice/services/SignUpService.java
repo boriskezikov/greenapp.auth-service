@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -29,6 +30,10 @@ public class SignUpService {
 
     private final KafkaTemplate<String, TwoFaDTO> kafkaTemplate;
     private final PlainUserRepository userRepository;
+
+    public void clear(){
+        userRepository.deleteAll();
+    }
 
     private String generate2FaCode() {
         return String.valueOf(new Random().nextInt(9999) + 1000);
@@ -48,7 +53,7 @@ public class SignUpService {
                 .birthDate(signUpDto.getBirthDate())
                 .mailAddress(signUpDto.getEmail())
                 .password(signUpDto.getPassword())
-                .sessionToken(token)
+                //.sessionToken(token)
                 .registeredDate(Timestamp.valueOf(LocalDateTime.now()))
                 .isEnabled(true)
                 ._is2faEnabled(true)
@@ -65,6 +70,13 @@ public class SignUpService {
 
         log.info(String.format("Token sent to %s topic", MAIL_2FA_TOPIC));
         return new AuthAccessToken(token);
+    }
+
+    public Boolean compare2Fa(BigInteger userId, String code) {
+        var userOpt = userRepository.findById(userId);
+        return userOpt.map(plainUser -> plainUser.get_2faCode()
+                .equals(code))
+                .orElse(false);
     }
 
 }
