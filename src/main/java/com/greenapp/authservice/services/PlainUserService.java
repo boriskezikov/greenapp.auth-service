@@ -23,7 +23,7 @@ public class PlainUserService {
         return userRepository.findAll();
     }
 
-    public PlainUser findUserById(BigInteger id) {
+    public PlainUser findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> {
             throw new EntityNotFoundException(
                     String.format("User id: %s is not found!", id));
