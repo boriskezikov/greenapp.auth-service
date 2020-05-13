@@ -17,7 +17,7 @@ public class AccessTokenProvider {
 
         return Jwts
                 .builder()
-                .setId("greenJWT")
+                .setId("green")
                 .setSubject(username)
                 .claim("authorities",
                         grantedAuthorities.stream()
