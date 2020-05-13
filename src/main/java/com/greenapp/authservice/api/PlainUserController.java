@@ -43,8 +43,8 @@ public class PlainUserController {
     }
 
     @GetMapping("verify2fa/{id}")
-    public boolean verify2fa(@PathVariable("id") Long userId, @RequestParam String userCode) {
-        return signUpService.compare2Fa(userId, userCode);
+    public ResponseEntity<Boolean> verify2fa(@PathVariable("id") Long userId, @RequestParam String userCode) {
+        return ResponseEntity.ok(signUpService.compare2Fa(userId, userCode));
     }
 
 }
