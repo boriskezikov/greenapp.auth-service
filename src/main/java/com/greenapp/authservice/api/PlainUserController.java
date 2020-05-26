@@ -18,7 +18,7 @@ import java.math.BigInteger;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("sign/")
+@RequestMapping("auth/sign/")
 public class PlainUserController {
 
     private final SignUpService signUpService;
