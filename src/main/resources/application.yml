@@ -12,6 +12,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  application:
+    name: auth-service
 
 server:
   port: 8080
@@ -22,3 +24,8 @@ management:
       enabled: true
     shutdown:
       enabled: true
+
+security:
+  ignored: /**
+  basic:
+    enable: false

@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.server.PathParam;
 import java.math.BigInteger;
+import java.security.Principal;
 
 @RestController
-@RequestMapping("auth/sign/")
+@RequestMapping("sign/")
 public class PlainUserController {
 
     private final SignUpService signUpService;
@@ -45,6 +46,11 @@ public class PlainUserController {
     @GetMapping("verify2fa/{id}")
     public ResponseEntity<Boolean> verify2fa(@PathVariable("id") Long userId, @RequestParam String userCode) {
         return ResponseEntity.ok(signUpService.compare2Fa(userId, userCode));
+    }
+
+    @GetMapping("test")
+    public String test(){
+        return "Hello";
     }
 
 }

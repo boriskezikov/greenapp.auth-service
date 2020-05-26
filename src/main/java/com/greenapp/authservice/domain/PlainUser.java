@@ -12,19 +12,19 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name ="PLAIN_USERS")
-@Table(name="PLAIN_USERS")
+@Entity(name = "PLAIN_USERS")
+@Table(name = "PLAIN_USERS")
 public class PlainUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="two_fa_code")
+    @Column(name = "two_fa_code")
     private String _2faCode;
     @JsonIgnore
     private Enum<TwoFaTypes> _2faDefaultType;
 
-    @Column(name="two_fa_code_expire_time")
+    @Column(name = "two_fa_code_expire_time")
     private Timestamp _2faExpireTime;
 
     @Column(name = "is_two_fa_enabled")
@@ -34,7 +34,7 @@ public class PlainUser {
     private Date birthDate;
     @Column
     private String firstName;
-    @Column(name="is_enabled")
+    @Column(name = "is_enabled")
     private boolean isEnabled;
     @Column
     private String lastName;

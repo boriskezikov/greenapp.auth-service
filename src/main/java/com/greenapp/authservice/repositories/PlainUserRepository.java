@@ -9,5 +9,6 @@ import java.math.BigInteger;
 @Repository
 public interface PlainUserRepository extends JpaRepository<PlainUser, Long> {
     PlainUser findByMailAddress(String mailAddress);
+
     boolean existsPlainUserByMailAddress(String mailAddress);
 }

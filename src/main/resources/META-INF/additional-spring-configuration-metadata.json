@@ -4,5 +4,6 @@
       "name": "management.endpoint.info.enabled",
       "type": "java.lang.String",
       "description": "Description for management.endpoint.info.enabled."
-  }
-] }
+    }
+  ]
+}
