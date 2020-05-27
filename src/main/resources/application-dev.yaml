@@ -1,9 +1,3 @@
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://ec2-54-175-117-212.compute-1.amazonaws.com
-#    username: scuikpoiqezkth
-#    password: d5ba06b1bebbfc49c52a7c0f69e40d3147bb42366145ce9cf09cdbc3bdd79f60
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
@@ -24,8 +18,3 @@ management:
       enabled: true
     shutdown:
       enabled: true
-
-security:
-  ignored: /**
-  basic:
-    enable: false

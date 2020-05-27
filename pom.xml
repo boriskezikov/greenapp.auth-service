@@ -102,11 +102,18 @@
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.activiti.cloud.audit</groupId>-->
+<!--            <artifactId>activiti-cloud-services-audit-jpa</artifactId>-->
+<!--            <version>7.0.51</version>-->
+<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.netflix.hystrix/hystrix-core -->
         <dependency>
-            <groupId>org.activiti.cloud.audit</groupId>
-            <artifactId>activiti-cloud-services-audit-jpa</artifactId>
-            <version>7.0.51</version>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+            <version>1.5.18</version>
         </dependency>
+
     </dependencies>
 
     <build>
