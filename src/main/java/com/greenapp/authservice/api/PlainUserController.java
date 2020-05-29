@@ -38,7 +38,7 @@ public class PlainUserController {
         return ResponseEntity.ok(signUpService.resend2Fa(mail));
     }
 
-    @PostMapping("up/")
+    @PostMapping("up")
     public ResponseEntity<AuthAccessToken> signUp(@RequestBody PlainUserSignUpDto userSignUpDto) {
         return ResponseEntity.ok(signUpService.signUp(userSignUpDto));
     }
