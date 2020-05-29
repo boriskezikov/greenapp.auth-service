@@ -48,6 +48,7 @@ public class PlainUserController {
         return ResponseEntity.ok(signUpService.compare2Fa(userId, userCode));
     }
 
+
     @GetMapping("test")
     public String test(){
         return "Hello";
