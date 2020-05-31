@@ -5,6 +5,7 @@ import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.services.SignInService;
 import com.greenapp.authservice.services.SignUpService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping("auth/sign")
 @RequiredArgsConstructor
-public class PlainUserController {
+public class UserController {
 
     private final SignUpService signUpService;
     private final SignInService signInService;
@@ -36,8 +37,8 @@ public class PlainUserController {
     }
 
     @PostMapping("/up")
-    public ResponseEntity<String> signUp(@RequestBody @Valid UserSignUpDTO userSignUpDto) {
-        return ResponseEntity.ok(signUpService.signUp(userSignUpDto));
+    public ResponseEntity<HttpStatus> signUp(@RequestBody @Valid UserSignUpDTO userSignUpDto) {
+        return signUpService.signUp(userSignUpDto);
     }
 
     @PostMapping("/in")
@@ -45,9 +46,9 @@ public class PlainUserController {
         return ResponseEntity.ok(signInService.signIn(signInDTO));
     }
 
-    @GetMapping("/verify2fa/{id}")
-    public ResponseEntity<Boolean> verify2fa(@PathVariable("id") @NotNull Long userId, @RequestParam String userCode) {
-        return ResponseEntity.ok(signUpService.compare2Fa(userId, userCode));
+    @GetMapping("/verify2fa/{mail}")
+    public ResponseEntity<String> verify2fa(@PathVariable("mail") @NotNull String mail, @RequestParam String userCode) {
+        return ResponseEntity.ok(signUpService.compare2Fa(mail, userCode));
     }
 
     @GetMapping("/test")

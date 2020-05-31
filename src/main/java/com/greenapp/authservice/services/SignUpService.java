@@ -1,5 +1,6 @@
 package com.greenapp.authservice.services;
 
+import com.greenapp.authservice.domain.SignInResponse;
 import com.greenapp.authservice.domain.User;
 import com.greenapp.authservice.domain.TwoFaTypes;
 import com.greenapp.authservice.dto.UserSignUpDTO;
@@ -10,6 +11,8 @@ import com.greenapp.authservice.utils.EmailAlreadyRegisteredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -33,11 +36,13 @@ public class SignUpService {
         userRepository.deleteAll();
     }
 
-    public Boolean compare2Fa(Long userId, String code) {
-        var userOpt = userRepository.findById(userId);
-        return userOpt.map(user -> user.get_2faCode()
-                .equals(code))
-                .orElse(false);
+    public String compare2Fa(String mail, String code) {
+        var user = userRepository.findByMailAddress(mail);
+
+        return user.get_2faCode().equals(code)
+                ? user.getSessionToken()
+                : SignInResponse.CODES_DOES_NOT_MATCH.name();
+
     }
 
     public boolean resend2Fa(String mail) {
@@ -56,7 +61,7 @@ public class SignUpService {
         return true;
     }
 
-    public String signUp(UserSignUpDTO signUpDto) {
+    public ResponseEntity<HttpStatus> signUp(UserSignUpDTO signUpDto) {
 
         if (userRepository.existsUserByMailAddress(signUpDto.getMailAddress())) {
             throw new EmailAlreadyRegisteredException(
@@ -72,7 +77,7 @@ public class SignUpService {
                 .build());
 
         log.info(String.format("Token sent to %s topic", MAIL_2FA_TOPIC));
-        return newUser.getSessionToken();
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     private User fillSignUpDefaults(UserSignUpDTO dto) {
