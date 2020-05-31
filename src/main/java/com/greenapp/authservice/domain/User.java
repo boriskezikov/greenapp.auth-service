@@ -2,6 +2,7 @@ package com.greenapp.authservice.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -44,6 +45,7 @@ public class User {
     @Column
     private Timestamp registeredDate;
     @Column
+    @Type(type = "text")
     private String sessionToken;
     private boolean isOnline;
     @Column

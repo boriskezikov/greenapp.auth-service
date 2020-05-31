@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -28,10 +29,9 @@ import static java.util.Optional.*;
 public class SignUpService {
 
     private final KafkaTemplate<String, TwoFaDTO> kafkaTemplate;
-
     private final UserRepository userRepository;
-
     private final ModelMapper modelMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public void clear() {
         userRepository.deleteAll();
@@ -82,12 +82,13 @@ public class SignUpService {
 
     private User fillSignUpDefaults(UserSignUpDTO dto) {
         var dao = modelMapper.map(dto, User.class);
+        dao.setPassword(passwordEncoder.encode(dto.getPassword()));
         dao.setEnabled(true);
         dao.setRegisteredDate();
         dao.set_is2faEnabled(true);
         dao.set_2faDefaultType(TwoFaTypes.MAIL);
         dao.set_2faCode(generate2FaCode());
-        dao.setSessionToken(AccessTokenProvider.getJWTToken(dto.getMailAddress()));
+        dao.setSessionToken(AccessTokenProvider.generateJwtToken(dto.getMailAddress()));
         return dao;
     }
 
