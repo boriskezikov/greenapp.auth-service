@@ -9,6 +9,21 @@ spring:
   application:
     name: auth-service
 
+zuul:
+  host:
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
+  semaphore:
+    max-semaphores: 500
+  sensitive-headers: true
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
 server:
   port: 8080
 

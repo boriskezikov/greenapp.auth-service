@@ -1,29 +1,28 @@
 package com.greenapp.authservice.services;
 
-import com.greenapp.authservice.domain.PlainUser;
-import com.greenapp.authservice.repositories.PlainUserRepository;
+import com.greenapp.authservice.domain.User;
+import com.greenapp.authservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.math.BigInteger;
 import java.util.List;
 
 @Service
-public class PlainUserService {
+public class UserService {
 
-    private final PlainUserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public PlainUserService(PlainUserRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public List<PlainUser> findAll() {
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public PlainUser findUserById(Long id) {
+    public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> {
             throw new EntityNotFoundException(
                     String.format("User id: %s is not found!", id));

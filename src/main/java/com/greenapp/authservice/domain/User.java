@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -13,8 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "PLAIN_USERS")
-@Table(name = "PLAIN_USERS")
-public class PlainUser {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,4 +48,8 @@ public class PlainUser {
     private boolean isOnline;
     @Column
     private String password;
+
+    public void setRegisteredDate(){
+        this.registeredDate = Timestamp.valueOf(LocalDateTime.now());
+    }
 }
