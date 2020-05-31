@@ -5,6 +5,7 @@ import com.greenapp.authservice.domain.User;
 import com.greenapp.authservice.domain.TwoFaTypes;
 import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.TwoFaDTO;
+import com.greenapp.authservice.dto.Verify2FaDTO;
 import com.greenapp.authservice.repositories.UserRepository;
 import com.greenapp.authservice.utils.AccessTokenProvider;
 import com.greenapp.authservice.utils.EmailAlreadyRegisteredException;
@@ -36,16 +37,15 @@ public class SignUpService {
         userRepository.deleteAll();
     }
 
-    public String compare2Fa(String mail, String code) {
-        var user = userRepository.findByMailAddress(mail);
-
-        return user.get_2faCode().equals(code)
+    public String compare2Fa(final Verify2FaDTO verify2FaDTO) {
+        var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress());
+        return user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())
                 ? user.getSessionToken()
                 : SignInResponse.CODES_DOES_NOT_MATCH.name();
 
     }
 
-    public boolean resend2Fa(String mail) {
+    public boolean resend2Fa(final String mail) {
         ofNullable(userRepository.findByMailAddress(mail)).ifPresent(
                 user -> {
                     if (user.getMailAddress().equals(mail)) {
@@ -61,7 +61,7 @@ public class SignUpService {
         return true;
     }
 
-    public ResponseEntity<HttpStatus> signUp(UserSignUpDTO signUpDto) {
+    public ResponseEntity<HttpStatus> signUp(final UserSignUpDTO signUpDto) {
 
         if (userRepository.existsUserByMailAddress(signUpDto.getMailAddress())) {
             throw new EmailAlreadyRegisteredException(
