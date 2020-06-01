@@ -93,7 +93,7 @@ public class SignUpService {
     }
 
     private String generate2FaCode() {
-        return String.valueOf(new Random().nextInt(9999) + 1000);
+        return String.valueOf(new Random().nextInt(9999));
     }
 
 }
