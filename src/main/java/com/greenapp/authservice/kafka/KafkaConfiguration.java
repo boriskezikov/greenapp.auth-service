@@ -13,13 +13,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.greenapp.authservice.dto.TwoFaDTO;
 import com.netflix.config.DynamicPropertyFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.connect.json.JsonDeserializer;
-import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -32,7 +29,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
-import static com.greenapp.authservice.kafka.KafkaConfigConstants.*;
+import static com.greenapp.authservice.kafka.KafkaConfigConstants.BOOTSTRAP;
+import static com.greenapp.authservice.kafka.KafkaConfigConstants.PASSWORD;
+import static com.greenapp.authservice.kafka.KafkaConfigConstants.USERNAME;
 
 @Configuration
 @EnableKafka

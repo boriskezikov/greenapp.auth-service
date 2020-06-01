@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 import java.util.Date;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 

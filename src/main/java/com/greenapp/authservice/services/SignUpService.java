@@ -1,13 +1,12 @@
 package com.greenapp.authservice.services;
 
 import com.greenapp.authservice.domain.SignInResponse;
-import com.greenapp.authservice.domain.User;
 import com.greenapp.authservice.domain.TwoFaTypes;
-import com.greenapp.authservice.dto.UserSignUpDTO;
+import com.greenapp.authservice.domain.User;
 import com.greenapp.authservice.dto.TwoFaDTO;
+import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.Verify2FaDTO;
 import com.greenapp.authservice.repositories.UserRepository;
-import com.greenapp.authservice.utils.AccessTokenProvider;
 import com.greenapp.authservice.utils.EmailAlreadyRegisteredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Random;
 
 import static com.greenapp.authservice.kafka.MailTopics.MAIL_2FA_TOPIC;
-import static java.util.Optional.*;
+import static java.util.Optional.ofNullable;
 
 @Service
 @Slf4j
