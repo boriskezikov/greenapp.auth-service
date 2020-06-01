@@ -37,12 +37,14 @@ public class SignUpService {
         userRepository.deleteAll();
     }
 
-    public String compare2Fa(final Verify2FaDTO verify2FaDTO) {
+    public String validate2Fa(final Verify2FaDTO verify2FaDTO) {
         var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress());
-        return user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())
-                ? user.getSessionToken()
-                : SignInResponse.CODES_DOES_NOT_MATCH.name();
 
+        if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())){
+            user.setEnabled(true);
+            return SignInResponse.CORRECT.name();
+        }
+        return SignInResponse.CODES_DOES_NOT_MATCH.name();
     }
 
     public boolean resend2Fa(final String mail) {
@@ -83,12 +85,11 @@ public class SignUpService {
     private User fillSignUpDefaults(UserSignUpDTO dto) {
         var dao = modelMapper.map(dto, User.class);
         dao.setPassword(passwordEncoder.encode(dto.getPassword()));
-        dao.setEnabled(true);
+        dao.setEnabled(false);
         dao.setRegisteredDate();
         dao.set_is2faEnabled(true);
         dao.set_2faDefaultType(TwoFaTypes.MAIL);
         dao.set_2faCode(generate2FaCode());
-        dao.setSessionToken(AccessTokenProvider.generateJwtToken(dto.getMailAddress()));
         return dao;
     }
 

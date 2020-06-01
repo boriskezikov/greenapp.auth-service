@@ -44,14 +44,12 @@ public class User {
     private transient String phoneNumber;
     @Column
     private Timestamp registeredDate;
-    @Column
-    @Type(type = "text")
-    private String sessionToken;
+
     private boolean isOnline;
     @Column
     private String password;
 
-    public void setRegisteredDate(){
+    public void setRegisteredDate() {
         this.registeredDate = Timestamp.valueOf(LocalDateTime.now());
     }
 }

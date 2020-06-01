@@ -1,9 +1,7 @@
 package com.greenapp.authservice.api;
 
-import com.greenapp.authservice.dto.UserSignInDTO;
 import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.Verify2FaDTO;
-import com.greenapp.authservice.services.SignInService;
 import com.greenapp.authservice.services.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,12 +17,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 @RestController
-@RequestMapping("auth/sign")
+@RequestMapping("auth")
 @RequiredArgsConstructor
-public class UserController {
+public class SignUpController {
 
     private final SignUpService signUpService;
-    private final SignInService signInService;
 
     @GetMapping("/clear")
     public void clearAllTest() {
@@ -36,19 +33,14 @@ public class UserController {
         return ResponseEntity.ok(signUpService.resend2Fa(mail));
     }
 
-    @PostMapping("/up")
+    @PostMapping("sign/up")
     public ResponseEntity<HttpStatus> signUp(@RequestBody @Valid UserSignUpDTO userSignUpDto) {
         return signUpService.signUp(userSignUpDto);
     }
 
-    @PostMapping("/in")
-    public ResponseEntity<String> signIn(@RequestBody @Valid UserSignInDTO signInDTO) {
-        return ResponseEntity.ok(signInService.signIn(signInDTO));
-    }
-
     @PostMapping("/verify2fa")
     public ResponseEntity<String> verify2fa(@RequestBody @Valid Verify2FaDTO dto) {
-        return ResponseEntity.ok(signUpService.compare2Fa(dto));
+        return ResponseEntity.ok(signUpService.validate2Fa(dto));
     }
 
     @GetMapping("/test")

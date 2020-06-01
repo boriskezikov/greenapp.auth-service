@@ -22,7 +22,7 @@ public class UserSignUpDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-mm-yyyy")
     private Date birthDate;
     @NotNull
-    private String mailAddress;;
+    private String mailAddress;
     @NotNull
     private String password;
     @JsonIgnore

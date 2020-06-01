@@ -33,7 +33,7 @@ public class SecurityFilter implements Filter {
         LOG.info(" Request: " + req.getRequestURI());
         LOG.info("-------------------------------------------------------------------------------------------");
 
-        if (authHeader == null || !Objects.equals(authHeader,"GREEN")) {
+        if (authHeader == null || !Objects.equals(authHeader, "GREEN")) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setContentType("application/json");
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Required headers not specified in the request or incorrect");

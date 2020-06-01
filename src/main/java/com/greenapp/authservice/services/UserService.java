@@ -28,4 +28,7 @@ public class UserService {
                     String.format("User id: %s is not found!", id));
         });
     }
+    public User findUserByMail(String mail){
+        return userRepository.findByMailAddress(mail);
+    }
 }
