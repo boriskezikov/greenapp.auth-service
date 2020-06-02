@@ -36,14 +36,15 @@ public class SignUpService {
         userRepository.deleteAll();
     }
 
-    public String validate2Fa(final Verify2FaDTO verify2FaDTO) {
+    public ResponseEntity<?> validate2Fa(final Verify2FaDTO verify2FaDTO) {
         var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress());
 
         if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())){
             user.setEnabled(true);
-            return SignInResponse.CORRECT.name();
+            return ResponseEntity.ok(SignInResponse.CORRECT.name());
         }
-        return SignInResponse.CODES_DOES_NOT_MATCH.name();
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED )
+                .body(SignInResponse.CODES_DOES_NOT_MATCH.name());
     }
 
     public boolean resend2Fa(final String mail) {

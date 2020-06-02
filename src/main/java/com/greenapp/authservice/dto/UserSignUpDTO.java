@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -20,6 +21,8 @@ public class UserSignUpDTO {
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-mm-yyyy")
     private Date birthDate;
+
+    @Email
     @NotNull
     private String mailAddress;
     @NotNull

@@ -1,5 +1,6 @@
 package com.greenapp.authservice.api;
 
+import com.greenapp.authservice.dto.RestorePasswordDTO;
 import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.Verify2FaDTO;
 import com.greenapp.authservice.services.SignUpService;
@@ -39,13 +40,10 @@ public class SignUpController {
     }
 
     @PostMapping("/verify2fa")
-    public ResponseEntity<String> verify2fa(@RequestBody @Valid Verify2FaDTO dto) {
-        return ResponseEntity.ok(signUpService.validate2Fa(dto));
+    public ResponseEntity<?> verify2fa(@RequestBody @Valid Verify2FaDTO dto) {
+        return signUpService.validate2Fa(dto);
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Hello";
-    }
+//    public ResponseEntity<Boolean> restorePassword(@RequestBody @Valid RestorePasswordDTO restorePasswordDTO)
 
 }
