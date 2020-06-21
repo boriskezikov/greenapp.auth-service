@@ -17,6 +17,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Random;
 
 import static com.greenapp.authservice.kafka.MailTopics.MAIL_2FA_TOPIC;
@@ -38,12 +39,11 @@ public class SignUpService {
 
     public ResponseEntity<?> validate2Fa(final Verify2FaDTO verify2FaDTO) {
         var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress());
-
         if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())){
             user.setEnabled(true);
             return ResponseEntity.ok(SignInResponse.CORRECT.name());
         }
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED )
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                 .body(SignInResponse.CODES_DOES_NOT_MATCH.name());
     }
 
@@ -63,6 +63,7 @@ public class SignUpService {
         return true;
     }
 
+    @Transactional
     public ResponseEntity<HttpStatus> signUp(final UserSignUpDTO signUpDto) {
 
         if (userRepository.existsUserByMailAddress(signUpDto.getMailAddress())) {
@@ -70,9 +71,7 @@ public class SignUpService {
                     String.format("User with %s email already registered!", signUpDto.getMailAddress()));
         }
         User newUser = fillSignUpDefaults(signUpDto);
-
         userRepository.save(newUser);
-
         kafkaTemplate.send(MAIL_2FA_TOPIC, TwoFaDTO.builder()
                 .mail(newUser.getMailAddress())
                 .twoFaCode(newUser.get_2faCode())

@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(AuthController.class.getName());
-
     private final UserService service;
 
     @GetMapping
