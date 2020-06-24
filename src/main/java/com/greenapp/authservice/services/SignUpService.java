@@ -57,7 +57,7 @@ public class SignUpService {
     }
 
     public boolean resend2Fa(final String mail) {
-        ofNullable(userRepository.findByMailAddress(mail)).ifPresent(
+        userRepository.findByMailAddress(mail).ifPresent(
                 user -> {
                     if (user.getMailAddress().equals(mail)) {
                         user.set_2faCode(generate2FaCode());

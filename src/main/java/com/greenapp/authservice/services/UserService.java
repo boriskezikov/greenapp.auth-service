@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -29,6 +30,10 @@ public class UserService {
         });
     }
     public User findUserByMail(String mail){
-        return userRepository.findByMailAddress(mail);
+        return userRepository.findByMailAddress(mail).get();
+    }
+
+    public List<User> findUsersByRegistrationDate(Timestamp date){
+        return userRepository.findAllByRegisteredDate(date);
     }
 }
