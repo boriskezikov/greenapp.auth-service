@@ -3,6 +3,7 @@ package com.greenapp.authservice.services;
 import com.greenapp.authservice.domain.SignInResponse;
 import com.greenapp.authservice.domain.TwoFaTypes;
 import com.greenapp.authservice.domain.User;
+import com.greenapp.authservice.dto.ClientDTO;
 import com.greenapp.authservice.dto.TwoFaDTO;
 import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.Verify2FaDTO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Random;
 
+import static com.greenapp.authservice.kafka.MailTopics.CLIENT_CREATED_TOPIC;
 import static com.greenapp.authservice.kafka.MailTopics.MAIL_2FA_TOPIC;
 import static java.util.Optional.ofNullable;
 
@@ -28,7 +30,7 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 public class SignUpService {
 
-    private final KafkaTemplate<String, TwoFaDTO> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -39,8 +41,15 @@ public class SignUpService {
 
     public ResponseEntity<?> validate2Fa(final Verify2FaDTO verify2FaDTO) {
         var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress());
-        if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())){
+        if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())) {
             user.setEnabled(true);
+            kafkaTemplate.send(CLIENT_CREATED_TOPIC, ClientDTO
+                    .builder()
+                    .birthDate(user.getBirthDate())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .mailAddress(user.getMailAddress())
+                    .registeredDate(user.getRegisteredDate()));
             return ResponseEntity.ok(SignInResponse.CORRECT.name());
         }
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
