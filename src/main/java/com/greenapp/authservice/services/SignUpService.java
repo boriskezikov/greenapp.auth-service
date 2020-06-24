@@ -38,7 +38,7 @@ import static com.greenapp.authservice.kafka.MailTopics.PASSWORD_RESET;
 @RequiredArgsConstructor
 public class SignUpService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate kafkaTemplate;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
