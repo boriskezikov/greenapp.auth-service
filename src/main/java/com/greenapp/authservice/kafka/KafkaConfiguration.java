@@ -75,7 +75,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, TwoFaDTO> kafkaTemplate() {
+    public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 

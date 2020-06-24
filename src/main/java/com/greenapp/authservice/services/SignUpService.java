@@ -6,10 +6,12 @@ import com.greenapp.authservice.domain.TwoFaTypes;
 import com.greenapp.authservice.domain.User;
 import com.greenapp.authservice.dto.ClientDTO;
 import com.greenapp.authservice.dto.TwoFaDTO;
+import com.greenapp.authservice.dto.UserInfo;
 import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.Verify2FaDTO;
 import com.greenapp.authservice.repositories.UserRepository;
 import com.greenapp.authservice.utils.EmailAlreadyRegisteredException;
+import com.greenapp.authservice.utils.mapper.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,13 +31,14 @@ import java.util.Random;
 
 import static com.greenapp.authservice.configuration.AuthConfiguration.CLIENT_SERVICE_URI;
 import static com.greenapp.authservice.kafka.MailTopics.MAIL_2FA_TOPIC;
+import static com.greenapp.authservice.kafka.MailTopics.PASSWORD_RESET;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SignUpService {
 
-    private final KafkaTemplate<String, TwoFaDTO> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -121,5 +124,14 @@ public class SignUpService {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         return headers;
     }
+
+    public void resetPassword(UserInfo info){
+       var user = userRepository.findByMailAddress(info.getUsername())
+               .orElseThrow(UserNotFoundException::new);
+       user.setPassword(info.getPassword());
+       userRepository.save(user);
+       kafkaTemplate.send(PASSWORD_RESET, info);
+    }
+
 }
 

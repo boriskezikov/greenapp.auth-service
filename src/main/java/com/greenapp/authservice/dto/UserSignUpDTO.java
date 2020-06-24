@@ -21,7 +21,6 @@ public class UserSignUpDTO {
     private String lastName;
     @NotNull
     private LocalDate birthDate;
-
     @Email
     @NotNull
     private String mailAddress;
