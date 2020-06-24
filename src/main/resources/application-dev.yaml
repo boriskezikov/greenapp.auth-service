@@ -5,7 +5,7 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
   application:
     name: auth-service
 

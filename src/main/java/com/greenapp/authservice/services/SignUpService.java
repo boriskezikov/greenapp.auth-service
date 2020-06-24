@@ -1,8 +1,10 @@
 package com.greenapp.authservice.services;
 
+import com.greenapp.authservice.domain.ClientTypes;
 import com.greenapp.authservice.domain.SignInResponse;
 import com.greenapp.authservice.domain.TwoFaTypes;
 import com.greenapp.authservice.domain.User;
+import com.greenapp.authservice.dto.ClientDTO;
 import com.greenapp.authservice.dto.TwoFaDTO;
 import com.greenapp.authservice.dto.UserSignUpDTO;
 import com.greenapp.authservice.dto.Verify2FaDTO;
@@ -11,17 +13,22 @@ import com.greenapp.authservice.utils.EmailAlreadyRegisteredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Random;
 
+import static com.greenapp.authservice.configuration.AuthConfiguration.CLIENT_SERVICE_URI;
 import static com.greenapp.authservice.kafka.MailTopics.MAIL_2FA_TOPIC;
-import static java.util.Optional.ofNullable;
 
 @Service
 @Slf4j
@@ -32,6 +39,7 @@ public class SignUpService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
 
     public void clear() {
         userRepository.deleteAll();
@@ -64,13 +72,24 @@ public class SignUpService {
     }
 
     @Transactional
-    public ResponseEntity<HttpStatus> signUp(final UserSignUpDTO signUpDto) {
+    public ResponseEntity<Long> signUp(final UserSignUpDTO signUpDto) {
 
         if (userRepository.existsUserByMailAddress(signUpDto.getMailAddress())) {
             throw new EmailAlreadyRegisteredException(
                     String.format("User with %s email already registered!", signUpDto.getMailAddress()));
         }
-        User newUser = fillSignUpDefaults(signUpDto);
+        var newUser = fillSignUpDefaults(signUpDto);
+        var body = new LinkedMultiValueMap<String, ClientDTO>();
+        body.add("client", ClientDTO.builder()
+                .birthDate(newUser.getBirthDate())
+                .name(newUser.getFirstName())
+                .surname(newUser.getLastName())
+                .type(ClientTypes.INDIVIDUAL.name())
+                .build());
+        var requestEntity = new HttpEntity<>(body, provideHeaders());
+        var clientId = restTemplate.postForEntity(CLIENT_SERVICE_URI, requestEntity, Long.class).getBody();
+        newUser.setClientId(clientId);
+
         userRepository.save(newUser);
         kafkaTemplate.send(MAIL_2FA_TOPIC, TwoFaDTO.builder()
                 .mail(newUser.getMailAddress())
@@ -78,7 +97,7 @@ public class SignUpService {
                 .build());
 
         log.info(String.format("Token sent to %s topic", MAIL_2FA_TOPIC));
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(clientId);
     }
 
     private User fillSignUpDefaults(UserSignUpDTO dto) {
@@ -96,5 +115,11 @@ public class SignUpService {
         return String.valueOf(new Random().nextInt(9999));
     }
 
+    private HttpHeaders provideHeaders(){
+        var headers = new HttpHeaders();
+        headers.set("X-GREEN-APP-ID", "GREEN");
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        return headers;
+    }
 }
 

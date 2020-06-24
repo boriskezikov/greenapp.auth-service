@@ -3,14 +3,15 @@ package com.greenapp.authservice.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ClientDTO {
     private Date birthDate;

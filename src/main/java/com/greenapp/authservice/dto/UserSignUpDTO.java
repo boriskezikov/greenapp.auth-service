@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -19,8 +20,7 @@ public class UserSignUpDTO {
     @NotNull
     private String lastName;
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-mm-yyyy")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Email
     @NotNull
