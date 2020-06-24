@@ -13,9 +13,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class ClientDTO {
-    private Date birthDate;
-    private String firstName;
-    private String lastName;
-    private String mailAddress;
-    private Timestamp registeredDate;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate birthDate;
+    private String name;
+    private String surname;
+    private String type;
 }
