@@ -21,12 +21,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 import static com.greenapp.authservice.configuration.AuthConfiguration.CLIENT_SERVICE_URI;
@@ -52,7 +58,7 @@ public class SignUpService {
         var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress()).get();
         if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())) {
             user.setEnabled(true);
-            if(user.getClientId()==null){
+            if (user.getClientId() == null) {
                 var body = new LinkedMultiValueMap<String, ClientDTO>();
                 body.add("client", ClientDTO.builder()
                         .birthDate(user.getBirthDate())
@@ -135,6 +141,22 @@ public class SignUpService {
                 .orElseThrow(UserNotFoundException::new);
         user.setPassword(info.getPassword());
         userRepository.save(user);
+    }
+
+    @Scheduled(cron = "0 0/15 * * * *")
+    public void deleteUnsignedUser() {
+        var now = LocalDateTime.now();
+        userRepository.findAll()
+                .stream()
+                .parallel()
+                .filter(user -> !user.isEnabled())
+                .forEach(user -> {
+                    var registered = user.getRegisteredDate().toLocalDateTime();
+                    if (Duration.between(registered, now).toMinutes() >= 15) {
+                        userRepository.delete(user);
+                        log.warn("User {} has not confirmed his registration and has been removed.", user.getId());
+                    }
+                });
     }
 
 }
