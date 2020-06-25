@@ -50,8 +50,24 @@ public class SignUpService {
 
     public ResponseEntity<?> validate2Fa(final Verify2FaDTO verify2FaDTO) {
         var user = userRepository.findByMailAddress(verify2FaDTO.getMailAddress()).get();
-        if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())){
+        if (user.get_2faCode().equals(verify2FaDTO.getTwoFaCode())) {
             user.setEnabled(true);
+            if(user.getClientId()==null){
+                var body = new LinkedMultiValueMap<String, ClientDTO>();
+                body.add("client", ClientDTO.builder()
+                        .birthDate(user.getBirthDate())
+                        .name(user.getFirstName())
+                        .surname(user.getLastName())
+                        .type(ClientTypes.INDIVIDUAL.name())
+                        .build());
+                var requestEntity = new HttpEntity<>(body, provideHeaders());
+                user.setClientId(restTemplate
+                        .postForEntity(CLIENT_SERVICE_URI, requestEntity, Long.class)
+                        .getBody());
+                userRepository.save(user);
+                log.info("Client created with ID: " + user.getClientId());
+            }
+            log.info("Two-factor verification code accepted");
             return ResponseEntity.ok(SignInResponse.CORRECT.name());
         }
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
@@ -75,24 +91,13 @@ public class SignUpService {
     }
 
     @Transactional
-    public ResponseEntity<Long> signUp(final UserSignUpDTO signUpDto) {
+    public ResponseEntity<HttpStatus> signUp(final UserSignUpDTO signUpDto) {
 
         if (userRepository.existsUserByMailAddress(signUpDto.getMailAddress())) {
             throw new EmailAlreadyRegisteredException(
                     String.format("User with %s email already registered!", signUpDto.getMailAddress()));
         }
         var newUser = fillSignUpDefaults(signUpDto);
-        var body = new LinkedMultiValueMap<String, ClientDTO>();
-        body.add("client", ClientDTO.builder()
-                .birthDate(newUser.getBirthDate())
-                .name(newUser.getFirstName())
-                .surname(newUser.getLastName())
-                .type(ClientTypes.INDIVIDUAL.name())
-                .build());
-        var requestEntity = new HttpEntity<>(body, provideHeaders());
-        var clientId = restTemplate.postForEntity(CLIENT_SERVICE_URI, requestEntity, Long.class).getBody();
-        newUser.setClientId(clientId);
-
         userRepository.save(newUser);
         kafkaTemplate.send(MAIL_2FA_TOPIC, TwoFaDTO.builder()
                 .mail(newUser.getMailAddress())
@@ -100,7 +105,7 @@ public class SignUpService {
                 .build());
 
         log.info(String.format("Token sent to %s topic", MAIL_2FA_TOPIC));
-        return ResponseEntity.ok(clientId);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     private User fillSignUpDefaults(UserSignUpDTO dto) {
@@ -118,18 +123,18 @@ public class SignUpService {
         return String.valueOf(new Random().nextInt(9999));
     }
 
-    private HttpHeaders provideHeaders(){
+    private HttpHeaders provideHeaders() {
         var headers = new HttpHeaders();
         headers.set("X-GREEN-APP-ID", "GREEN");
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         return headers;
     }
 
-    public void resetPassword(UserInfo info){
-       var user = userRepository.findByMailAddress(info.getUsername())
-               .orElseThrow(UserNotFoundException::new);
-       user.setPassword(info.getPassword());
-       userRepository.save(user);
+    public void resetPassword(UserInfo info) {
+        var user = userRepository.findByMailAddress(info.getUsername())
+                .orElseThrow(UserNotFoundException::new);
+        user.setPassword(info.getPassword());
+        userRepository.save(user);
     }
 
 }

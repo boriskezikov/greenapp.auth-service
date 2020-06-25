@@ -36,7 +36,7 @@ public class SignUpController {
     }
 
     @PostMapping("sign/up")
-    public ResponseEntity<Long> signUp(@RequestBody @Valid UserSignUpDTO userSignUpDto) {
+    public ResponseEntity<HttpStatus> signUp(@RequestBody @Valid UserSignUpDTO userSignUpDto) {
         return signUpService.signUp(userSignUpDto);
     }
 
