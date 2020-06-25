@@ -33,7 +33,9 @@ public class AuthController {
     }
     @GetMapping("/client")
     public Long getClientIdByEmail(String mail){
-        return  service.findUserByMail(mail).getClientId();
+        var client = service.findUserByMail(mail).getClientId();
+        logger.warn("Found client: " + client);
+        return  client;
     }
 
 }
