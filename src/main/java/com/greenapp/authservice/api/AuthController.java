@@ -31,4 +31,10 @@ public class AuthController {
                 .password(user.getPassword())
                 .build();
     }
+    @GetMapping("/client")
+    public Long getClientIdByEmail(String mail){
+        return  service.findUserByMail(mail).getClientId();
+    }
+
 }
+

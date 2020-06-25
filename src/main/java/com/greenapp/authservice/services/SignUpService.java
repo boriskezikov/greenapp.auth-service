@@ -38,7 +38,7 @@ import static com.greenapp.authservice.kafka.MailTopics.PASSWORD_RESET;
 @RequiredArgsConstructor
 public class SignUpService {
 
-    private final KafkaTemplate kafkaTemplate;
+    private final KafkaTemplate<String, TwoFaDTO> kafkaTemplate;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -130,7 +130,6 @@ public class SignUpService {
                .orElseThrow(UserNotFoundException::new);
        user.setPassword(info.getPassword());
        userRepository.save(user);
-       kafkaTemplate.send(PASSWORD_RESET, info);
     }
 
 }

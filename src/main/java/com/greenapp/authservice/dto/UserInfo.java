@@ -16,4 +16,5 @@ public class UserInfo {
     @Email
     private String username;
     private String password;
+    private Long clientId;
 }
