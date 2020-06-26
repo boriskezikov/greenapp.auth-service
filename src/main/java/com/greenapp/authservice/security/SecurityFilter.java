@@ -1,6 +1,7 @@
-package com.greenapp.authservice.security;
+package com.greenapp.shopcatalogmanager.security;
 
 
+import com.greenapp.authservice.security.NotAuthorizedException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.Filter;
@@ -12,7 +13,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 @Component
@@ -26,14 +30,25 @@ public class SecurityFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
+
+        var excludeAuth = new ArrayList<>(Arrays.asList("api-docs", "configuration", "swagger", "webjars", "error"));
         var authHeader = req.getHeader("X-GREEN-APP-ID");
+        AtomicBoolean exclude = new AtomicBoolean(false);
 
         LOG.info("-------------------------------------------------------------------------------------------");
         LOG.info(" /" + req.getMethod());
         LOG.info(" Request: " + req.getRequestURI());
         LOG.info("-------------------------------------------------------------------------------------------");
 
-        if (authHeader == null || !Objects.equals(authHeader, "GREEN")) {
+        var uri = req.getRequestURI();
+
+        excludeAuth.forEach(ex -> {
+            if (uri.contains(ex)) {
+                exclude.set(true);
+            }
+        });
+
+        if (!exclude.get() && (authHeader == null || !Objects.equals(authHeader, "GREEN"))) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setContentType("application/json");
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Required headers not specified in the request or incorrect");
@@ -43,7 +58,7 @@ public class SecurityFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         LOG.warning("Auth filter initialization");
     }
 }
