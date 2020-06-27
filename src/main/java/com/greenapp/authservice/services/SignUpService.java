@@ -29,15 +29,11 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Random;
 
 import static com.greenapp.authservice.configuration.AuthConfiguration.CLIENT_SERVICE_URI;
 import static com.greenapp.authservice.kafka.MailTopics.MAIL_2FA_TOPIC;
-import static com.greenapp.authservice.kafka.MailTopics.PASSWORD_RESET;
 
 @Service
 @Slf4j
