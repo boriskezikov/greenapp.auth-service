@@ -1,6 +1,7 @@
 package com.greenapp.authservice.services;
 
 import com.greenapp.authservice.domain.User;
+import com.greenapp.authservice.dto.ClientMailDTO;
 import com.greenapp.authservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,21 @@ public class UserService {
                     String.format("User id: %s is not found!", id));
         });
     }
-    public User findUserByMail(String mail){
+
+    public User findUserByMail(String mail) {
         return userRepository.findByMailAddress(mail).get();
     }
 
-    public List<User> findUsersByRegistrationDate(Timestamp date){
+    public ClientMailDTO findUserByClientId(Long clientId) {
+        return userRepository.findByClientId(clientId).map(dao ->
+                ClientMailDTO.builder()
+                        .mailAddress(dao.getMailAddress())
+                        .name(dao.getFirstName())
+                        .surname(dao.getLastName())
+                        .build()).orElse(null);
+    }
+
+    public List<User> findUsersByRegistrationDate(Timestamp date) {
         return userRepository.findAllByRegisteredDate(date);
     }
 }

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.greenapp.authservice.dto.TwoFaDTO;
-import com.greenapp.authservice.dto.UserInfo;
 import com.netflix.config.DynamicPropertyFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -76,7 +75,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, ?> kafkaTemplate() {
+    public KafkaTemplate<String, TwoFaDTO> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
